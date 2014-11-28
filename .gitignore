@@ -26,10 +26,12 @@ $RECYCLE.BIN/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
+
 
 # Files that might appear on external disk
 .Spotlight-V100
@@ -41,3 +43,42 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+/Genetic Algorithm/nbproject/private/
+/Genetic_Algorithm3/build/
+/Genetic_Algorithm3/nbproject/private/
+
+#All results files
+!/Genetic Algorithm/data/
+!/Genetic_Algorithm2/data/
+!/Genetic_Algorithm3/data/
+!/Genetic_Algorithm3b/data/
+
+/Genetic Algorithm/data/*
+/Genetic_Algorithm2/data/*
+/Genetic_Algorithm3/data/*
+/Genetic_Algorithm3b/data/*
+
+!/Genetic Algorithm/data/data*
+!/Genetic_Algorithm2/data/data*
+!/Genetic_Algorithm3/data/data*
+!/Genetic_Algorithm3b/data/data*
+
+#All the CSV data files
+*.csv
+
+# NetBeans specific #
+*/nbproject/private/
+*/build/
+*/nbbuild/
+*/dist/
+*/nbdist/
+*/nbactions.xml
+*/nb-configuration.xml
+
+# Class Files #
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
