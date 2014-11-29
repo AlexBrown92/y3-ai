@@ -10,19 +10,19 @@ package GeneticAlgorithm;
  * @author Alex
  */
 public class Datum {
-    private int[] value;
+    private double[] value;
     private int result;
 
-    public Datum(int[] value, int result) {
+    public Datum(double[] value, int result) {
         this.value = value;
         this.result = result;
     }
 
-    public int[] getValue() {
+    public double[] getValue() {
         return value;
     }
 
-    public void setValue(int[] value) {
+    public void setValue(double[] value) {
         this.value = value;
     }
 
@@ -36,7 +36,7 @@ public class Datum {
     
     public String display(){
         String out = "";
-        for(int i : value){
+        for(double i : value){
             out = out + i;
         }
         out = out + " " + result;
