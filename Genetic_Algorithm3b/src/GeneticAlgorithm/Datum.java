@@ -11,9 +11,9 @@ package GeneticAlgorithm;
  */
 public class Datum {
     private int[] value;
-    private int result;
+    private boolean result;
 
-    public Datum(int[] value, int result) {
+    public Datum(int[] value, boolean result) {
         this.value = value;
         this.result = result;
     }
@@ -26,11 +26,11 @@ public class Datum {
         this.value = value;
     }
 
-    public int getResult() {
+    public boolean isResult() {
         return result;
     }
 
-    public void setResult(int result) {
+    public void setResult(boolean result) {
         this.result = result;
     }
     

@@ -17,7 +17,7 @@ public class Population {
     //private Individual[] population;
     private ArrayList<Individual> population;
     private Random rn;
-    
+
     public Population(int pop_size, int gene_size) {
         rn = new Random();
         population = new ArrayList<>(pop_size);
@@ -25,13 +25,13 @@ public class Population {
             population.add(i, new Individual(gene_size));
         }
     }
-    
-    public Population(){
+
+    public Population() {
         rn = new Random();
         population = new ArrayList<>();
     }
-    
-    public void addIndividual(Individual ind){
+
+    public void addIndividual(Individual ind) {
         population.add(ind);
     }
 
@@ -42,12 +42,12 @@ public class Population {
     public void setIndividual(Individual ind, int index) {
         population.set(index, ind);
     }
-    
-    public Individual removeIndividual(int index){
+
+    public Individual removeIndividual(int index) {
         return population.remove(index);
     }
-    
-    public void runFitnessAll(){
+
+    public void runFitnessAll() {
         for (Individual ind : population) {
             ind.updateFitness();
         }
@@ -65,62 +65,66 @@ public class Population {
         }
         return sum;
     }
-    
-    public Individual getFittestIndividual(){
+
+    public Individual getFittestIndividual() {
         int best = 0;
         Individual bestInd = null;
         for (Individual ind : population) {
-            if(ind.getFitness() > best){
+            if (ind.getFitness() > best) {
                 best = ind.getFitness();
                 bestInd = ind;
             }
         }
         return bestInd;
     }
-    
-    public ArrayList<Individual> getPopulation(){
+
+    public int calculateBestFitness() {
+        int best = 0;
+        for (Individual ind : population) {
+            if (ind.getFitness() > best) {
+                best = ind.getFitness();
+            }
+        }
+        return best;
+    }
+
+    public ArrayList<Individual> getPopulation() {
         return population;
     }
-    
-    public void setPopulation(Population newPop){
+
+    public void setPopulation(Population newPop) {
         this.population = newPop.getPopulation();
     }
-    
+
     /**
      *
      * @return
      */
-    public int getSize(){
+    public int getSize() {
         return population.toArray().length;
     }
-    
-    public Population selectParents(){
+
+    public Population selectParents() {
         Population parents = new Population();
-        Population tournament = new Population();
-        for (int i = 0; i < this.getSize(); i++) {          
-            for (int j = 0; j < GeneticAlgorithm.TOURNAMENT_SIZE; j++) {
-                tournament.addIndividual(population.get(rn.nextInt(this.getSize()-1)));
-            }
-            parents.addIndividual(tournament.getFittestIndividual());
-            tournament.clear();
-            /*
-            Individual parent1 = population.get(rn.nextInt(this.getSize()-1));
-            Individual parent2 = population.get(rn.nextInt(this.getSize()-1));
-            if (parent1.getFitness() > parent2.getFitness()){
+        for (int i = 0; i < this.getSize(); i++) {
+            Individual parent1 = population.get(rn.nextInt(this.getSize() - 1));
+            Individual parent2 = population.get(rn.nextInt(this.getSize() - 1));
+            if (parent1.getFitness() > parent2.getFitness()) {
                 parents.addIndividual(parent1);
             } else {
                 parents.addIndividual(parent2);
-            }*/
+            }
         }
         return parents;
     }
-    
-    public void combine(){
+
+    public void combine() {
         Population childPop = new Population();
-        while (!population.isEmpty()){
+        while (!population.isEmpty()) {
             Individual ind1 = population.remove(rn.nextInt(this.getSize()));
             Individual ind2 = population.remove(rn.nextInt(this.getSize()));
-            if (rn.nextDouble() <= GeneticAlgorithm.CROSSOVER_RATE){ // Crossover chance
+
+            if (rn.nextDouble() <= GeneticAlgorithm.CROSSOVER_RATE) { // Crossover chance
                 Individual[] childPair = ind1.crossover(ind2);
                 childPop.addIndividual(childPair[0]);
                 childPop.addIndividual(childPair[1]);
@@ -131,14 +135,14 @@ public class Population {
         }
         this.setPopulation(childPop);
     }
-    
-    public void mutatePopulation(){
+
+    public void mutatePopulation() {
         for (Individual ind : population) {
             ind = ind.mutate(GeneticAlgorithm.MUTATION_RATE);
         }
     }
-    
-    public void clear(){
+
+    public void clear() {
         population.clear();
     }
 
