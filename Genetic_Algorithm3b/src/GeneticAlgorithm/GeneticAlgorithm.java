@@ -17,14 +17,14 @@ import java.util.Scanner;
  * @author Alex
  */
 public class GeneticAlgorithm {
-
+    
     public static Random rn;
-
+    
     public static final int POPULATION_SIZE = 100;
     public static final int NUMBER_OF_RULES = 10;
     public static final int DATA_LENGTH = 6;
     public static final int NUMBER_OF_RUNS = 3000;
-    public static final int TOURNAMENT_SIZE = 2;
+    public static final int TOURNAMENT_SIZE = 5;
     public static final double MUTATION_RATE = 0.0075;
     public static final double MAX_MUTATION = 0.1;
     public static final double CROSSOVER_RATE = 0.9;
@@ -40,10 +40,10 @@ public class GeneticAlgorithm {
      */
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException, IOException {
         rn = new Random();
-
+        
         int[] epochTaken = new int[10];
         double[] fitnessPercentages = new double[10];
-
+        
         trainingData = new ArrayList<>();
         ArrayList<Input> testData = new ArrayList<>();
         String dirPath = "D:\\Dropbox\\Work\\Year 3\\AI\\Code\\y3-ai\\Genetic_Algorithm3b\\data\\";
@@ -84,7 +84,7 @@ public class GeneticAlgorithm {
         settings.println("CROSSOVER_RATE: " + CROSSOVER_RATE);
         settings.println("TEST_PERCENTAGE: " + TEST_PERCENTAGE);
         settings.close();
-
+        
         for (int run = 0; run < 10; run++) { // Run 10 times to give an average
             // Split off some data for testing later.
             for (int i = 0; i < trainingNumber; i++) {
@@ -99,7 +99,7 @@ public class GeneticAlgorithm {
             // Create a new random population
             Population pop = new Population(POPULATION_SIZE, GENE_SIZE);
             pop.runFitnessAll();
-
+            
             Individual generationBest = pop.getFittestIndividual();
             int i = 1;
 
@@ -113,13 +113,18 @@ public class GeneticAlgorithm {
 
                 // Log a record of this epoch
                 System.out.println("Run #" + i + " Mean:\t" + parents.calculateFitnessMean() + " Sum:\t" + parents.calculateFitnessSum() + " Best: (" + generationBest.getFitness() + ")\t" + generationBest.displayGene());
-                writer.println(i + "," + parents.calculateFitnessMean() + "," + parents.calculateFitnessSum() + "," + generationBest.getFitness() + ",[" + generationBest.displayGene() + "]");
+                //writer.println(i + "," + parents.calculateFitnessMean() + "," + parents.calculateFitnessSum() + "," + generationBest.getFitness() + ",[" + generationBest.displayGene() + "]");
+                writer.print(i + "," + parents.calculateFitnessMean() + "," + parents.calculateFitnessSum() + "," + generationBest.getFitness());
+                for (Datum r : geneToRules(generationBest.getGene())) {
+                    writer.print("[" + r.display() + "]");
+                }
+                writer.print("\n");
                 pop = parents;
                 i++;
             }
-
+            
             epochTaken[run] = i;
-
+            
             System.out.println("END OF TRAINING");
             writer.println();
             writer.println();
@@ -159,7 +164,7 @@ public class GeneticAlgorithm {
                             j++;
                             inCount++;
                         }
-
+                        
                         if (ruleFits) {
                             if (d.getExpected() == rule.getResult()) {
                                 fitness++;
@@ -186,7 +191,7 @@ public class GeneticAlgorithm {
             } else {
                 System.out.println("No Test Data");
             }
-
+            
             writer.close();
             while (!testData.isEmpty()) {
                 trainingData.add(testData.remove(0));
@@ -213,7 +218,7 @@ public class GeneticAlgorithm {
         }
         r.println();
         r.print("AVERAGE: " + (float) (epochTakenSum / 10));
-
+        
         r.close();
         // Open the summary spreadsheet
         File allRuns = new File(dirPath + "summary" + DATA_SET + ".csv");
@@ -246,11 +251,11 @@ public class GeneticAlgorithm {
         }
         return rules;
     }
-
+    
     public static int calculateFitness(Individual ind) {
         int fitness = 0;
         ArrayList<Datum> rules = geneToRules(ind.getGene());
-
+        
         if (DEBUG) {
             System.out.println("===========================");
             System.out.println(ind.displayGene());
@@ -284,7 +289,7 @@ public class GeneticAlgorithm {
                     i++;
                     inCount++;
                 }
-
+                
                 if (ruleFits) {
                     if (d.getExpected() == rule.getResult()) {
                         fitness++;
