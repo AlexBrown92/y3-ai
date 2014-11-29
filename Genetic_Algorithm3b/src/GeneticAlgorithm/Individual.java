@@ -9,6 +9,7 @@ import java.util.Random;
  * @author Alex
  */
 public class Individual {
+
     private double[] gene;
     private int fitness;
     private Random rn;
@@ -29,14 +30,13 @@ public class Individual {
     }
 
     private void populate() {
-        for (int i = 0; i < (gene.length-1); i++) {
-            if(rn.nextBoolean()){
-                gene[i] = rn.nextDouble();
+        for (int i = 0; i < (gene.length - 1); i++) {
+            if ((i+1)%(gene.length/GeneticAlgorithm.NUMBER_OF_RULES)==0){
+                gene[i] = rn.nextInt(2);
             } else {
-                gene[i] = -(rn.nextDouble());
+                gene[i] = rn.nextDouble();
             }
         }
-        gene[gene.length-1] = rn.nextInt(2); // Output bit can only be 1 or 0
     }
 
     public Individual[] crossover(Individual parent2) {
@@ -46,9 +46,9 @@ public class Individual {
 
         g1 = new double[gene.length];
         g2 = new double[gene.length];
-        
+
         for (int i = 0; i < gene.length; i++) {
-            if (i < crossoverPoint){
+            if (i < crossoverPoint) {
                 g1[i] = parent1.getGene()[i];
                 g2[i] = parent2.getGene()[i];
             } else {
@@ -56,53 +56,53 @@ public class Individual {
                 g2[i] = parent1.getGene()[i];
             }
         }
-        
+
         Individual[] children = new Individual[2];
         children[0] = new Individual(g1);
         children[1] = new Individual(g2);
 
         return children;
     }
-    
-    private int generateCrossOverPoint(){
-        int ub = gene.length -1;
+
+    private int generateCrossOverPoint() {
+        int ub = gene.length - 1;
         int lb = 1;
         int point = rn.nextInt(ub - lb) + lb;
-        return point; 
+        return point;
     }
 
-
-    
-    public Individual mutate(double mutationRate){
+    public Individual mutate(double mutationRate) {
         double[] tempGene = this.gene;
-        for (int i = 0; i < tempGene.length-1; i++) {
-            if (rn.nextDouble() <= mutationRate){
-                double modifier;
-                if (rn.nextBoolean()){
-                    modifier = rn.nextDouble() * GeneticAlgorithm.MAX_MUTATION;
+        for (int i = 0; i < tempGene.length; i++) {
+            if (rn.nextDouble() <= mutationRate) {
+                // Detect outcome bit
+                if ((i + 1) % (gene.length / GeneticAlgorithm.NUMBER_OF_RULES) == 0) {
+                    if (tempGene[i] == 0){
+                        tempGene[i] = 1;
+                    } else {
+                        tempGene[i] = 0;
+                    }
                 } else {
-                    modifier = -(rn.nextDouble() * GeneticAlgorithm.MAX_MUTATION);
+                    double modifier;
+                    if (rn.nextBoolean()) {
+                        modifier = rn.nextDouble() * GeneticAlgorithm.MAX_MUTATION;
+                    } else {
+                        modifier = -(rn.nextDouble() * GeneticAlgorithm.MAX_MUTATION);
+                    }
+                    if ((tempGene[i] + modifier) > 1) {
+                        tempGene[i] = 1;
+                    } else if ((modifier + tempGene[i]) < 0) {
+                        tempGene[i] = 0;
+                    } else {
+                        tempGene[i] += modifier;
+                    }
                 }
-                if ((tempGene[i] + modifier) > 1){
-                    tempGene[i] = 1;
-                } else if ((modifier + tempGene[i]) < -1){
-                    tempGene[i] = -1;
-                } else {
-                    tempGene[i] += modifier;
-                }
-            }
-        }
-        if (rn.nextDouble() <= mutationRate){
-            if (tempGene[tempGene.length-1] == 0){
-                tempGene[tempGene.length-1] = 1;
-            } else {
-                tempGene[tempGene.length-1] = 0;
             }
         }
         return new Individual(tempGene);
     }
-    
-    public void updateFitness(){
+
+    public void updateFitness() {
         this.fitness = GeneticAlgorithm.calculateFitness(this);
     }
 
@@ -117,8 +117,8 @@ public class Individual {
     public double[] getGene() {
         return gene;
     }
-    
-    public ArrayList<Double> getGeneArrayList(){
+
+    public ArrayList<Double> getGeneArrayList() {
         ArrayList<Double> al = new ArrayList<>();
         for (double g : gene) {
             al.add(g);

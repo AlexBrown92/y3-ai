@@ -20,16 +20,16 @@ public class GeneticAlgorithm {
 
     public static Random rn;
 
-    public static final int POPULATION_SIZE = 26;
+    public static final int POPULATION_SIZE = 100;
     public static final int NUMBER_OF_RULES = 10;
     public static final int DATA_LENGTH = 6;
-    public static final int NUMBER_OF_RUNS = 1000;
+    public static final int NUMBER_OF_RUNS = 3000;
     public static final int TOURNAMENT_SIZE = 2;
-    public static final double MUTATION_RATE = 0.015;
+    public static final double MUTATION_RATE = 0.0075;
     public static final double MAX_MUTATION = 0.1;
     public static final double CROSSOVER_RATE = 0.9;
-    public static final int GENE_SIZE = NUMBER_OF_RULES * ((DATA_LENGTH*2) + 1);
-    public static final double TEST_PERCENTAGE = 0;
+    public static final int GENE_SIZE = NUMBER_OF_RULES * ((DATA_LENGTH * 2) + 1);
+    public static final double TEST_PERCENTAGE = 0.2;
     public static final int DATA_SET = 3;
     public static ArrayList<Input> trainingData;
     public static final boolean DEBUG = false;
@@ -46,8 +46,8 @@ public class GeneticAlgorithm {
 
         trainingData = new ArrayList<>();
         ArrayList<Input> testData = new ArrayList<>();
-        //String dirPath = "D:\\Dropbox\\Work\\Year 3\\AI\\Code\\Genetic_Algorithm3\\data\\";
-        String dirPath = "C:\\Users\\Alex\\Dropbox\\Work\\Year 3\\AI\\Code\\Genetic_Algorithm3b\\data\\";
+        String dirPath = "D:\\Dropbox\\Work\\Year 3\\AI\\Code\\y3-ai\\Genetic_Algorithm3b\\data\\";
+        //String dirPath = "C:\\Users\\Alex\\Dropbox\\Work\\Year 3\\AI\\Code\\y3-ai\\Genetic_Algorithm3b\\data\\";
         // Setup scanner on trainingData file
         //File in = new File("C:\\Users\\Alex\\Dropbox\\Work\\Year 3\\AI\\Code\\Genetic Algorithm\\data\\data2.txt"); // Laptop
         File in = new File(dirPath + "data" + DATA_SET + ".txt"); // Desktop
@@ -85,7 +85,7 @@ public class GeneticAlgorithm {
         settings.println("TEST_PERCENTAGE: " + TEST_PERCENTAGE);
         settings.close();
 
-        for (int run = 0; run < 2; run++) { // Run 10 times to give an average
+        for (int run = 0; run < 10; run++) { // Run 10 times to give an average
             // Split off some data for testing later.
             for (int i = 0; i < trainingNumber; i++) {
                 testData.add(trainingData.remove(rn.nextInt(trainingData.size())));
@@ -126,13 +126,54 @@ public class GeneticAlgorithm {
             writer.println();
             writer.println("TEST DATA:");
             // Test final generation best (This is essentially the fitness function)
-            /*
+
             if (!testData.isEmpty()) {
                 int fitness = 0;
                 for (Input d : testData) {
-                    NeuralNetwork nn = new NeuralNetwork(d.getInputs(), generationBest.getGeneArrayList(), NUMBER_OF_HIDDEN_NODES);
-                    if (d.getExpected() == Math.round(nn.getOutputNode().getOutput())) {
-                        fitness++;
+                    if (DEBUG) {
+                        System.out.println("TEST: " + d.display());
+                    }
+                    ArrayList<Datum> rules = geneToRules(generationBest.getGene());
+                    for (Datum rule : rules) {
+                        if (DEBUG) {
+                            System.out.print("RULE: " + rule.display());
+                        }
+                        boolean ruleFits = true;
+                        double ub, lb;
+                        int inCount = 0;
+                        for (int j = 0; j < rule.getValue().length; j++) {
+                            if (rule.getValue()[j] > rule.getValue()[j + 1]) {
+                                ub = rule.getValue()[j];
+                                lb = rule.getValue()[j + 1];
+                            } else {
+                                ub = rule.getValue()[j + 1];
+                                lb = rule.getValue()[j];
+                            }
+                            if ((d.getInputs().get(inCount) < lb) || (d.getInputs().get(inCount) > ub)) {
+                                ruleFits = false;
+                                if (DEBUG) {
+                                    System.out.println(" NO MATCH (POS " + inCount + ")");
+                                }
+                                break;
+                            }
+                            j++;
+                            inCount++;
+                        }
+
+                        if (ruleFits) {
+                            if (d.getExpected() == rule.getResult()) {
+                                fitness++;
+                                if (DEBUG) {
+                                    System.out.println(" MATCH");
+                                }
+                            } else {
+                                if (DEBUG) {
+                                    System.out.println(" NO MATCH (RES)");
+                                }
+                            }
+                            // We've found a matching rule, stop looking 
+                            break;
+                        }
                     }
                 }
 
@@ -145,7 +186,7 @@ public class GeneticAlgorithm {
             } else {
                 System.out.println("No Test Data");
             }
-            */
+
             writer.close();
             while (!testData.isEmpty()) {
                 trainingData.add(testData.remove(0));
@@ -179,10 +220,37 @@ public class GeneticAlgorithm {
         FileWriter fw = new FileWriter(allRuns, true);
         fw.append("" + POPULATION_SIZE + "," + NUMBER_OF_RULES + "," + NUMBER_OF_RUNS + "," + TOURNAMENT_SIZE + "," + MUTATION_RATE + "," + CROSSOVER_RATE + "," + TEST_PERCENTAGE + "," + (fitnessSum / 10) + "," + timeStamp + "\n");
         fw.close();
-    } // main
+    } // main.
+
+    // Used to split the int array representing the gene into "Datum" representation for easier calculation
+    public static ArrayList<Datum> geneToRules(double[] gene) {
+        ArrayList<Datum> rules = new ArrayList<>();
+        int ruleLength = (gene.length / NUMBER_OF_RULES) - 1;
+        double[] tmpValue = new double[ruleLength];
+        int count = 0;
+        for (int i = 0; i < gene.length; i++) {
+            if (count < (ruleLength)) {
+                tmpValue[count] = gene[i];
+                count++;
+            } else {
+                int expected;
+                if (Math.round(gene[i]) == 0) {
+                    expected = 0;
+                } else {
+                    expected = 1;
+                }
+                count = 0;
+                rules.add(new Datum(tmpValue, expected));
+                tmpValue = new double[ruleLength];
+            }
+        }
+        return rules;
+    }
 
     public static int calculateFitness(Individual ind) {
         int fitness = 0;
+        ArrayList<Datum> rules = geneToRules(ind.getGene());
+
         if (DEBUG) {
             System.out.println("===========================");
             System.out.println(ind.displayGene());
@@ -191,15 +259,47 @@ public class GeneticAlgorithm {
             if (DEBUG) {
                 System.out.println("TEST: " + d.display());
             }
-            /*
-            NeuralNetwork nn = new NeuralNetwork(d.getInputs(), ind.getGeneArrayList(), NUMBER_OF_HIDDEN_NODES);
-            if (d.getExpected() == Math.round(nn.getOutputNode().getOutput())) {
-                if (DEBUG){
-                    System.out.println("MATCHED");
+            for (Datum rule : rules) {
+                if (DEBUG) {
+                    System.out.print("RULE: " + rule.display());
                 }
-                fitness++;
+                boolean ruleFits = true;
+                double ub, lb;
+                int inCount = 0;
+                for (int i = 0; i < rule.getValue().length; i++) {
+                    if (rule.getValue()[i] > rule.getValue()[i + 1]) {
+                        ub = rule.getValue()[i];
+                        lb = rule.getValue()[i + 1];
+                    } else {
+                        ub = rule.getValue()[i + 1];
+                        lb = rule.getValue()[i];
+                    }
+                    if ((d.getInputs().get(inCount) < lb) || (d.getInputs().get(inCount) > ub)) {
+                        ruleFits = false;
+                        if (DEBUG) {
+                            System.out.println(" NO MATCH (POS " + inCount + ")");
+                        }
+                        break;
+                    }
+                    i++;
+                    inCount++;
+                }
+
+                if (ruleFits) {
+                    if (d.getExpected() == rule.getResult()) {
+                        fitness++;
+                        if (DEBUG) {
+                            System.out.println(" MATCH");
+                        }
+                    } else {
+                        if (DEBUG) {
+                            System.out.println(" NO MATCH (RES)");
+                        }
+                    }
+                    // We've found a matching rule, stop looking 
+                    break;
+                }
             }
-            nn = null;*/
         }
         return fitness;
     }

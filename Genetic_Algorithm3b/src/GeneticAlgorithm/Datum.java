@@ -10,33 +10,33 @@ package GeneticAlgorithm;
  * @author Alex
  */
 public class Datum {
-    private int[] value;
-    private boolean result;
+    private double[] value;
+    private int result;
 
-    public Datum(int[] value, boolean result) {
+    public Datum(double[] value, int result) {
         this.value = value;
         this.result = result;
     }
 
-    public int[] getValue() {
+    public double[] getValue() {
         return value;
     }
 
-    public void setValue(int[] value) {
+    public void setValue(double[] value) {
         this.value = value;
     }
 
-    public boolean isResult() {
+    public int getResult() {
         return result;
     }
 
-    public void setResult(boolean result) {
+    public void setResult(int result) {
         this.result = result;
     }
     
     public String display(){
         String out = "";
-        for(int i : value){
+        for(double i : value){
             out = out + i;
         }
         out = out + " " + result;
