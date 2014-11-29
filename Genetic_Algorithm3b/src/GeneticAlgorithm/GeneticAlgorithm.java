@@ -116,7 +116,7 @@ public class GeneticAlgorithm {
                 //writer.println(i + "," + parents.calculateFitnessMean() + "," + parents.calculateFitnessSum() + "," + generationBest.getFitness() + ",[" + generationBest.displayGene() + "]");
                 writer.print(i + "," + parents.calculateFitnessMean() + "," + parents.calculateFitnessSum() + "," + generationBest.getFitness());
                 for (Datum r : geneToRules(generationBest.getGene())) {
-                    writer.print("[" + r.display() + "]");
+                    writer.print(",[" + r.display() + "]");
                 }
                 writer.print("\n");
                 pop = parents;
