@@ -23,10 +23,10 @@ public class GeneticAlgorithm {
     public static final int POPULATION_SIZE = 100;
     public static final int NUMBER_OF_RULES = 10;
     public static final int DATA_LENGTH = 6;
-    public static final int NUMBER_OF_RUNS = 3000;
+    public static final int NUMBER_OF_RUNS = 10000;
     public static final int TOURNAMENT_SIZE = 5;
     public static final double MUTATION_RATE = 0.0075;
-    public static final double MAX_MUTATION = 0.1;
+    public static final double MAX_MUTATION = 0.2;
     public static final double CROSSOVER_RATE = 0.9;
     public static final int GENE_SIZE = NUMBER_OF_RULES * ((DATA_LENGTH * 2) + 1);
     public static final double TEST_PERCENTAGE = 0.2;
@@ -223,7 +223,7 @@ public class GeneticAlgorithm {
         // Open the summary spreadsheet
         File allRuns = new File(dirPath + "summary" + DATA_SET + ".csv");
         FileWriter fw = new FileWriter(allRuns, true);
-        fw.append("" + POPULATION_SIZE + "," + NUMBER_OF_RULES + "," + NUMBER_OF_RUNS + "," + TOURNAMENT_SIZE + "," + MUTATION_RATE + "," + CROSSOVER_RATE + "," + TEST_PERCENTAGE + "," + (fitnessSum / 10) + "," + timeStamp + "\n");
+        fw.append("" + POPULATION_SIZE + "," + NUMBER_OF_RULES + "," + NUMBER_OF_RUNS + "," + TOURNAMENT_SIZE + "," + MUTATION_RATE + "," + MAX_MUTATION + "," + CROSSOVER_RATE + "," + TEST_PERCENTAGE + "," + (fitnessSum / 10) + "," + timeStamp + "\n");
         fw.close();
     } // main.
 
