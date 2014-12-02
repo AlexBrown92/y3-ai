@@ -20,16 +20,16 @@ public class GeneticAlgorithm {
 
     public static Random rn;
 
-    public static final int POPULATION_SIZE = 26;
-    public static final int NUMBER_OF_RULES = 9;
+    public static final int POPULATION_SIZE = 500;
+    public static final int NUMBER_OF_RULES = 5;
     public static final int DATA_LENGTH = 6;
-    public static final int NUMBER_OF_RUNS = 1000;
-    public static final int TOURNAMENT_SIZE = 2;
-    public static final double MUTATION_RATE = 0.015;
+    public static final int NUMBER_OF_RUNS = 3000;
+    public static final int TOURNAMENT_SIZE = 8;
+    public static final double MUTATION_RATE = 0.028;
     public static final double CROSSOVER_RATE = 0.9;
     public static final int GENE_SIZE = NUMBER_OF_RULES * (DATA_LENGTH + 1);
-    public static final double TEST_PERCENTAGE = 0;
-    public static final int DATA_SET = 1;
+    public static final double TEST_PERCENTAGE = 0.2;
+    public static final int DATA_SET = 3;
     public static ArrayList<Datum> trainingData;
     public static final boolean DEBUG = false;
 
@@ -45,7 +45,7 @@ public class GeneticAlgorithm {
 
         trainingData = new ArrayList<>();
         ArrayList<Datum> testData = new ArrayList<>();
-        String dirPath = "D:\\Dropbox\\Work\\Year 3\\AI\\Code\\Genetic_Algorithm2\\data\\";
+        String dirPath = "D:\\Dropbox\\Work\\Year 3\\AI\\Code\\y3-ai\\Genetic_Algorithm2\\data\\";
         // Setup scanner on trainingData file
         //File in = new File("C:\\Users\\Alex\\Dropbox\\Work\\Year 3\\AI\\Code\\Genetic Algorithm\\data\\data2.txt"); // Laptop
         File in = new File(dirPath + "data" + DATA_SET + ".txt"); // Desktop
@@ -57,13 +57,22 @@ public class GeneticAlgorithm {
         // Read in the data from the file
         while (scan.hasNext()) {
             String line = scan.nextLine();
-            //int split = line.indexOf(' ');
-            int split = DATA_LENGTH;
-            int[] tmpValue = new int[split];
-            for (int i = 0; i < split; i++) {
-                tmpValue[i] = Character.getNumericValue(line.charAt(i));
+            if (DATA_SET != 3) {
+                //int split = line.indexOf(' ');
+                int split = DATA_LENGTH;
+                int[] tmpValue = new int[split];
+                for (int i = 0; i < split; i++) {
+                    tmpValue[i] = Character.getNumericValue(line.charAt(i));
+                }
+                trainingData.add(new Datum(tmpValue, Character.getNumericValue(line.charAt(split + 1))));
+            } else {
+                int[] inputs = new int[DATA_LENGTH];
+                String[] items = line.split("\\s");
+                for (int i = 0; i < inputs.length; i++) {
+                    inputs[i] = (int) Math.round(Double.parseDouble(items[i]));
+                }
+                trainingData.add(new Datum(inputs, Integer.parseInt(items[DATA_LENGTH])));
             }
-            trainingData.add(new Datum(tmpValue, Character.getNumericValue(line.charAt(split + 1))));
         }
 
         // Calculate the number of rows from the file to be used in testing. 
